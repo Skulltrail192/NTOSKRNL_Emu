@@ -1903,55 +1903,71 @@ const unsigned char* LpcRequestWaitReplyPortEx_magic2mask = LpcRequestWaitReplyP
 
 void WRK2003_Init(void)
 {
+UNICODE_STRING KeInvalidateAllCachesName       = RTL_CONSTANT_STRING(L"KeInvalidateAllCaches");
+UNICODE_STRING KeAlertThreadName     = RTL_CONSTANT_STRING(L"KeAlertThread");
+UNICODE_STRING KeTestAlertThreadName = RTL_CONSTANT_STRING(L"KeTestAlertThread");
+UNICODE_STRING LpcRequestWaitReplyPortExName = RTL_CONSTANT_STRING(L"LpcRequestWaitReplyPortEx");	
 #if (NTDDI_VERSION < NTDDI_VISTA) && defined(_X86_)
 
 #if (NTDDI_VERSION >= NTDDI_WINXP) && (NTDDI_VERSION <= NTDDI_WINXPSP4)
 ////////////////////////////////////////////////////// 
 //  KeInvalidateAllCaches
-gTramp_KeInvalidateAllCaches = (PFN_BOOLEAN) ModuleHexSearch(MODULE_NTOSKRNL, KeInvalidateAllCaches_magic1, sizeof(KeInvalidateAllCaches_magic1), KeInvalidateAllCaches_magic1mask);
-if (!gTramp_KeInvalidateAllCaches)
-    gTramp_KeInvalidateAllCaches = (PFN_BOOLEAN) ModuleHexSearch(MODULE_NTOSKRNL, KeInvalidateAllCaches_magic2, sizeof(KeInvalidateAllCaches_magic2), KeInvalidateAllCaches_magic2mask);
-    if (!gTramp_KeInvalidateAllCaches)
-        gTramp_KeInvalidateAllCaches = (PFN_BOOLEAN) ModuleHexSearch(MODULE_NTOSKRNL, KeInvalidateAllCaches_magic3, sizeof(KeInvalidateAllCaches_magic3), KeInvalidateAllCaches_magic3mask);
-            if (!gTramp_KeInvalidateAllCaches)
-            gTramp_KeInvalidateAllCaches = (PFN_BOOLEAN) ModuleHexSearch(MODULE_NTOSKRNL, KeInvalidateAllCaches_magic4, sizeof(KeInvalidateAllCaches_magic4), KeInvalidateAllCaches_magic4mask);
-                if (!gTramp_KeInvalidateAllCaches)
-                    KeBugCheckEx(0xDEADBEEFL, 5, 0, 0, 2);
+gTramp_KeInvalidateAllCaches = (PFN_BOOLEAN)MmGetSystemRoutineAddress(&KeInvalidateAllCachesName);
+if(gTramp_KeInvalidateAllCaches == NULL){
+	gTramp_KeInvalidateAllCaches = (PFN_BOOLEAN) ModuleHexSearch(MODULE_NTOSKRNL, KeInvalidateAllCaches_magic1, sizeof(KeInvalidateAllCaches_magic1), KeInvalidateAllCaches_magic1mask);
+	if (!gTramp_KeInvalidateAllCaches)
+		gTramp_KeInvalidateAllCaches = (PFN_BOOLEAN) ModuleHexSearch(MODULE_NTOSKRNL, KeInvalidateAllCaches_magic2, sizeof(KeInvalidateAllCaches_magic2), KeInvalidateAllCaches_magic2mask);
+		if (!gTramp_KeInvalidateAllCaches)
+			gTramp_KeInvalidateAllCaches = (PFN_BOOLEAN) ModuleHexSearch(MODULE_NTOSKRNL, KeInvalidateAllCaches_magic3, sizeof(KeInvalidateAllCaches_magic3), KeInvalidateAllCaches_magic3mask);
+				if (!gTramp_KeInvalidateAllCaches)
+				gTramp_KeInvalidateAllCaches = (PFN_BOOLEAN) ModuleHexSearch(MODULE_NTOSKRNL, KeInvalidateAllCaches_magic4, sizeof(KeInvalidateAllCaches_magic4), KeInvalidateAllCaches_magic4mask);
+					if (!gTramp_KeInvalidateAllCaches)
+						KeBugCheckEx(0xDEADBEEFL, 5, 0, 0, 2);
+}
 //////////////////////////////////////////////////////
 #endif // WinXP RTM <> SP4
 
 
 //////////////////////////////////////////////////////   
 //  KeAlertThread
-gTramp_KeAlertThread = (PFN_BOOLEAN_PKTHREAD_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeAlertThread_magic1, sizeof(KeAlertThread_magic1), KeAlertThread_magic1mask);
-if (!gTramp_KeAlertThread)
-    gTramp_KeAlertThread = (PFN_BOOLEAN_PKTHREAD_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeAlertThread_magic2, sizeof(KeAlertThread_magic2), KeAlertThread_magic2mask);
-    if (!gTramp_KeAlertThread)
-        gTramp_KeAlertThread = (PFN_BOOLEAN_PKTHREAD_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeAlertThread_magic1chk, sizeof(KeAlertThread_magic1chk), KeAlertThread_magic1chkmask);
-        if (!gTramp_KeAlertThread)
-            KeBugCheckEx(0xDEADBEEFL, 5, 0, 0, 3);
+gTramp_KeAlertThread = (PFN_BOOLEAN_PKTHREAD_KPROCESSOR_MODE)MmGetSystemRoutineAddress(&KeAlertThreadName);
+if(gTramp_KeAlertThread == NULL){
+	gTramp_KeAlertThread = (PFN_BOOLEAN_PKTHREAD_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeAlertThread_magic1, sizeof(KeAlertThread_magic1), KeAlertThread_magic1mask);
+	if (!gTramp_KeAlertThread)
+		gTramp_KeAlertThread = (PFN_BOOLEAN_PKTHREAD_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeAlertThread_magic2, sizeof(KeAlertThread_magic2), KeAlertThread_magic2mask);
+		if (!gTramp_KeAlertThread)
+			gTramp_KeAlertThread = (PFN_BOOLEAN_PKTHREAD_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeAlertThread_magic1chk, sizeof(KeAlertThread_magic1chk), KeAlertThread_magic1chkmask);
+			if (!gTramp_KeAlertThread)
+				KeBugCheckEx(0xDEADBEEFL, 5, 0, 0, 3);
+}
 //////////////////////////////////////////////////////
 
 
 //////////////////////////////////////////////////////   
 //  KeTestAlertThread
-gTramp_KeTestAlertThread = (PFN_BOOLEAN_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeTestAlertThread_magic1, sizeof(KeTestAlertThread_magic1), KeTestAlertThread_magic1mask);
-if (!gTramp_KeTestAlertThread)
-    gTramp_KeTestAlertThread = (PFN_BOOLEAN_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeTestAlertThread_magic2, sizeof(KeTestAlertThread_magic2), KeTestAlertThread_magic2mask);
-    if (!gTramp_KeTestAlertThread)
-        gTramp_KeTestAlertThread = (PFN_BOOLEAN_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeTestAlertThread_magic1chk, sizeof(KeTestAlertThread_magic1chk), KeTestAlertThread_magic1chkmask);
-        if (!gTramp_KeTestAlertThread)
-            KeBugCheckEx(0xDEADBEEFL, 5, 0, 0, 4);
+gTramp_KeTestAlertThread = (PFN_BOOLEAN_KPROCESSOR_MODE)MmGetSystemRoutineAddress(&KeTestAlertThreadName);
+if(gTramp_KeTestAlertThread == NULL){
+	gTramp_KeTestAlertThread = (PFN_BOOLEAN_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeTestAlertThread_magic1, sizeof(KeTestAlertThread_magic1), KeTestAlertThread_magic1mask);
+	if (!gTramp_KeTestAlertThread)
+		gTramp_KeTestAlertThread = (PFN_BOOLEAN_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeTestAlertThread_magic2, sizeof(KeTestAlertThread_magic2), KeTestAlertThread_magic2mask);
+		if (!gTramp_KeTestAlertThread)
+			gTramp_KeTestAlertThread = (PFN_BOOLEAN_KPROCESSOR_MODE) ModuleHexSearch(MODULE_NTOSKRNL, KeTestAlertThread_magic1chk, sizeof(KeTestAlertThread_magic1chk), KeTestAlertThread_magic1chkmask);
+			if (!gTramp_KeTestAlertThread)
+				KeBugCheckEx(0xDEADBEEFL, 5, 0, 0, 4);
+}
 //////////////////////////////////////////////////////
 
 
 //////////////////////////////////////////////////////   
 //  LpcRequestWaitReplyPortEx
-gTramp_LpcRequestWaitReplyPortEx = (PFN_NTSTATUS_PVOID_PPORT_MESSAGE_PPORT_MESSAGE) ModuleHexSearch(MODULE_NTOSKRNL, LpcRequestWaitReplyPortEx_magic1, sizeof(LpcRequestWaitReplyPortEx_magic1), LpcRequestWaitReplyPortEx_magic1mask);
-if (!gTramp_LpcRequestWaitReplyPortEx)
-    gTramp_LpcRequestWaitReplyPortEx = (PFN_NTSTATUS_PVOID_PPORT_MESSAGE_PPORT_MESSAGE) ModuleHexSearch(MODULE_NTOSKRNL, LpcRequestWaitReplyPortEx_magic2, sizeof(LpcRequestWaitReplyPortEx_magic2), LpcRequestWaitReplyPortEx_magic2mask);
-    if (!gTramp_LpcRequestWaitReplyPortEx)
-        KeBugCheckEx(0xDEADBEEFL, 5, 0, 0, 5);
+gTramp_LpcRequestWaitReplyPortEx = (PFN_NTSTATUS_PVOID_PPORT_MESSAGE_PPORT_MESSAGE)MmGetSystemRoutineAddress(&LpcRequestWaitReplyPortExName);
+if(gTramp_LpcRequestWaitReplyPortEx == NULL){
+	gTramp_LpcRequestWaitReplyPortEx = (PFN_NTSTATUS_PVOID_PPORT_MESSAGE_PPORT_MESSAGE) ModuleHexSearch(MODULE_NTOSKRNL, LpcRequestWaitReplyPortEx_magic1, sizeof(LpcRequestWaitReplyPortEx_magic1), LpcRequestWaitReplyPortEx_magic1mask);
+	if (!gTramp_LpcRequestWaitReplyPortEx)
+		gTramp_LpcRequestWaitReplyPortEx = (PFN_NTSTATUS_PVOID_PPORT_MESSAGE_PPORT_MESSAGE) ModuleHexSearch(MODULE_NTOSKRNL, LpcRequestWaitReplyPortEx_magic2, sizeof(LpcRequestWaitReplyPortEx_magic2), LpcRequestWaitReplyPortEx_magic2mask);
+		if (!gTramp_LpcRequestWaitReplyPortEx)
+			KeBugCheckEx(0xDEADBEEFL, 5, 0, 0, 5);
+}
 //////////////////////////////////////////////////////
 
 
